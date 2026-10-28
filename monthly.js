@@ -14,6 +14,27 @@
    if(card.querySelector('.monthly-box'))return;
    const d=data.find(item=>item.id===card.dataset.debtId); if(!d)return;
    if(!d.monthsPaid)d.monthsPaid={};
+   // Compatibilidade: meses já marcados antes do abatimento automático.
+   // Só completa a diferença entre meses marcados e registros de parcela, sem apagar pagamentos existentes.
+   if(!Array.isArray(d.payments))d.payments=[];
+   const selectedMonths=names.map((_,i)=>i).filter(i=>!!d.monthsPaid[i]);
+   const monthlyPayments=d.payments.filter(p=>p.source==='monthly');
+   let missing=Math.max(0,selectedMonths.length-d.payments.length);
+   if(missing>0){
+    const count=Math.max(1,Math.floor(Number(d.installments)||1));
+    for(const i of selectedMonths){
+     if(missing<=0)break;
+     const pid='monthly-installment-'+i;
+     if(d.payments.some(p=>p.id===pid))continue;
+     const base=Number(d.amount)/count;
+     const value=Math.round((i===count-1?Number(d.amount)-base*(count-1):base)*100)/100;
+     if(value>0 && value<=balance(d)+0.001){
+      d.payments.push({id:pid,amount:value,date:new Date().toISOString().slice(0,10),note:'Parcela de '+names[i]+' marcada como paga (sincronização)',source:'monthly',monthIndex:i});
+      missing--;
+     }
+    }
+    save(data);
+   }
    const box=document.createElement('div');box.className='monthly-box';
    box.style.cssText='margin-top:12px;padding:12px;border:1px solid #273750;border-radius:12px;background:#0d1728';
    const title=document.createElement('strong');title.textContent='📅 Parcelas por mês';title.style.cssText='display:block;margin-bottom:5px;font-size:14px';box.append(title);
