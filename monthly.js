@@ -39,7 +39,7 @@
    box.style.cssText='margin-top:12px;padding:12px;border:1px solid #273750;border-radius:12px;background:#0d1728';
    const title=document.createElement('strong');title.textContent='📅 Parcelas por mês';title.style.cssText='display:block;margin-bottom:5px;font-size:14px';box.append(title);
    const hint=document.createElement('div');hint.textContent='Marque um mês para abater uma parcela do saldo. Desmarcar desfaz esse abatimento mensal.';hint.style.cssText='font-size:12px;color:#9eafc7;line-height:1.4;margin-bottom:10px';box.append(hint);
-   const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px';
+   const toggle=document.createElement('button');toggle.type='button';toggle.className='secondary tiny';toggle.textContent='＋ Mostrar meses';toggle.style.cssText='margin:0 0 10px;width:100%';const grid=document.createElement('div');grid.style.cssText='display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px';toggle.addEventListener('click',()=>{const opening=grid.style.display==='none';grid.style.display=opening?'grid':'none';toggle.textContent=opening?'− Ocultar meses':'＋ Mostrar meses'});box.append(toggle);
    names.forEach((month,i)=>{
     const label=document.createElement('label');label.style.cssText='display:flex;align-items:center;gap:6px;padding:8px 5px;border:1px solid #30415c;border-radius:8px;font-size:12px;min-width:0;cursor:pointer';
     const cb=document.createElement('input');cb.type='checkbox';cb.checked=!!d.monthsPaid[i];cb.style.cssText='width:16px;height:16px;accent-color:#44d7a8;flex-shrink:0';
