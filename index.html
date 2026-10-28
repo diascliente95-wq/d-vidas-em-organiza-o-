@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>Dívidas em Organização</title>
+<style>
+:root{--bg:#0b1220;--panel:#111c2f;--panel2:#17243a;--text:#f4f7fb;--muted:#9eafc7;--line:#273750;--accent:#44d7a8;--red:#ff5d6c;--yellow:#ffd166;--blue:#65a7ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0b1220,#101b2e 60%,#0b1220);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+header{padding:22px 16px 18px;max-width:1050px;margin:auto}h1{font-size:clamp(25px,5vw,36px);margin:0 0 6px;letter-spacing:-.7px}header p{color:var(--muted);margin:0}.status{font-size:12px;color:var(--accent);margin-top:12px}
+main{max-width:1050px;margin:auto;padding:0 16px 34px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}.stat,.panel,.debt{background:rgba(17,28,47,.94);border:1px solid var(--line);border-radius:16px}.stat{padding:14px}.stat span{display:block;color:var(--muted);font-size:12px}.stat strong{display:block;font-size:clamp(17px,4vw,25px);margin-top:6px;overflow-wrap:anywhere}.layout{display:grid;grid-template-columns: minmax(0, .9fr) minmax(0,1.1fr);gap:16px}.panel{padding:17px;margin-bottom:16px}.panel h2{font-size:18px;margin:0 0 14px}.field{margin:10px 0}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}input,select,textarea{width:100%;padding:12px;background:#0c1525;border:1px solid #30415c;border-radius:10px;color:var(--text);font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--accent)}textarea{resize:vertical;min-height:76px}button{border:0;border-radius:10px;padding:12px 14px;font-weight:700;font:inherit;cursor:pointer}.primary{background:var(--accent);color:#06251c;width:100%;font-weight:800}.secondary{background:#25344c;color:var(--text)}.danger{background:#482330;color:#ffc0c7}.tiny{padding:8px 10px;font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.toolbar{display:flex;gap:8px;margin-bottom:12px}.toolbar input{flex:1}.debt{padding:15px;margin-bottom:10px}.debtTop{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.debt h3{margin:0;font-size:17px;overflow-wrap:anywhere}.muted{color:var(--muted);font-size:13px}.amount{font-size:22px;font-weight:800;margin-top:9px}.remaining{color:var(--yellow);font-size:13px;margin-top:4px}.tag{font-size:11px;border-radius:30px;padding:5px 8px;background:#263650;white-space:nowrap}.tag.paid{color:var(--accent);background:#123a34}.tag.late{color:#ffb0b8;background:#482330}.progress{height:6px;background:#283650;border-radius:9px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;background:var(--accent)}.empty{text-align:center;padding:28px 10px;color:var(--muted)}.foot{font-size:12px;color:var(--muted);line-height:1.55;padding:0 3px}.hidden{display:none!important}.payrow{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}.payrow strong{font-size:14px}.payrow small{display:block;color:var(--muted)}.notice{padding:11px;background:#152b35;border:1px solid #28534e;color:#b6ffeb;border-radius:10px;font-size:13px;margin-bottom:15px}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.stats{gap:7px}.stat{padding:11px 9px}.stat span{font-size:11px}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+<h1>💳 Dívidas em Organização</h1>
+<p>Controle suas dívidas, vencimentos e pagamentos em um só lugar.</p>
+<div class="status" id="saveStatus">● Salvamento automático ativado neste aparelho</div>
+</header>
+<main>
+<div class="notice">✅ Seus registros são salvos automaticamente neste navegador. Fechar e reabrir o aplicativo não deve apagar os dados. <b>Não limpe os dados/armazenamento do navegador</b> sem exportar um backup.</div>
+<section class="stats">
+<div class="stat"><span>Total cadastrado</span><strong id="totalValue">R$ 0,00</strong></div>
+<div class="stat"><span>Saldo pendente</span><strong id="pendingValue">R$ 0,00</strong></div>
+<div class="stat"><span>Dívidas em aberto</span><strong id="openCount">0</strong></div>
+</section>
+<div class="layout">
+<section>
+<div class="panel">
+<h2 id="formTitle">➕ Cadastrar dívida</h2>
+<form id="debtForm">
+<input id="editId" type="hidden">
+<div class="field"><label for="person">Nome da pessoa / credor *</label><input id="person" maxlength="100" required placeholder="Ex.: João Silva"></div>
+<div class="field"><label for="description">Descrição</label><input id="description" maxlength="160" placeholder="Ex.: Empréstimo, compra..."></div>
+<div class="field"><label for="amount">Valor total (R$) *</label><input id="amount" type="number" min="0.01" step="0.01" required inputmode="decimal" placeholder="0,00"></div>
+<div class="field"><label for="dueDate">Vencimento</label><input id="dueDate" type="date"></div>
+<div class="field"><label for="installments">Quantidade de parcelas</label><input id="installments" type="number" min="1" max="600" step="1" value="1" inputmode="numeric"></div>
+<div class="field"><label for="notes">Observações</label><textarea id="notes" maxlength="1000" placeholder="Detalhes, acordos ou lembretes..."></textarea></div>
+<button class="primary" type="submit" id="saveDebt">Salvar dívida</button>
+<div class="actions"><button class="secondary tiny" type="button" id="cancelEdit">Cancelar edição</button></div>
+</form>
+</div>
+<div class="panel">
+<h2>🛡️ Backup dos dados</h2>
+<p class="muted">Exporte um arquivo para guardar uma cópia. Depois, importe esse arquivo para recuperar os registros neste aplicativo.</p>
+<div class="actions"><button class="secondary" type="button" id="exportBtn">⬇ Exportar backup</button><button class="secondary" type="button" id="importBtn">⬆ Importar backup</button><input class="hidden" id="importFile" type="file" accept=".json,application/json"></div>
+<p class="foot">O backup é salvo como arquivo no seu dispositivo. Esta versão ainda não sincroniza automaticamente entre aparelhos e não recupera dados após limpar o armazenamento do navegador sem um backup.</p>
+</div>
+</section>
+<section class="panel">
+<h2>📋 Minhas dívidas</h2>
+<div class="toolbar"><input id="search" placeholder="Pesquisar por nome ou descrição" aria-label="Pesquisar dívidas"><select id="filter" aria-label="Filtrar dívidas"><option value="all">Todas</option><option value="open">Em aberto</option><option value="paid">Quitadas</option><option value="late">Atrasadas</option></select></div>
+<div id="debtList"></div>
+</section>
+</div>
+</main>
+<script>
+(function(){
+'use strict';
+const STORAGE_KEY='dividas-organizadas-v1';
+const $=id=>document.getElementById(id);
+let debts=[];
+const brl=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0);
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d.toISOString().slice(0,10)};
+const uid=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+function safeLoad(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const parsed=JSON.parse(raw);if(Array.isArray(parsed))debts=parsed;}}catch(e){$('saveStatus').textContent='⚠ Não foi possível ler o armazenamento local';}}
+function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(debts));$('saveStatus').textContent='● Salvo automaticamente às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}catch(e){$('saveStatus').textContent='⚠ Falha ao salvar. Exporte um backup e libere espaço no aparelho.';alert('Não foi possível salvar no navegador. Exporte um backup imediatamente.');}}
+function sumPaid(d){return (d.payments||[]).reduce((s,p)=>s+(Number(p.amount)||0),0)}
+function balance(d){return Math.max(0,Number(d.amount)-sumPaid(d))}
+function isLate(d){return balance(d)>0&&d.dueDate&&d.dueDate<today()}
+function renderStats(){const total=debts.reduce((s,d)=>s+Number(d.amount||0),0),pending=debts.reduce((s,d)=>s+balance(d),0);$('totalValue').textContent=brl(total);$('pendingValue').textContent=brl(pending);$('openCount').textContent=debts.filter(d=>balance(d)>0).length;}
+function render(){renderStats();const q=$('search').value.trim().toLocaleLowerCase('pt-BR'),filter=$('filter').value;let list=debts.filter(d=>((d.person+' '+(d.description||'')+' '+(d.notes||'')).toLocaleLowerCase('pt-BR').includes(q)));if(filter==='open')list=list.filter(d=>balance(d)>0);if(filter==='paid')list=list.filter(d=>balance(d)<=0);if(filter==='late')list=list.filter(isLate);list.sort((a,b)=>(a.dueDate||'9999').localeCompare(b.dueDate||'9999'));const root=$('debtList');root.replaceChildren();if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent=debts.length?'Nenhuma dívida encontrada com esse filtro.':'Nenhuma dívida cadastrada ainda. Use o formulário para começar.';root.append(e);return;}for(const d of list){const paid=sumPaid(d),bal=balance(d),pct=Math.min(100,Math.round(paid/Math.max(1,Number(d.amount))*100));const card=document.createElement('article');card.className='debt';const top=document.createElement('div');top.className='debtTop';const heading=document.createElement('div');const name=document.createElement('h3');name.textContent=d.person;heading.append(name);const sub=document.createElement('div');sub.className='muted';sub.textContent=(d.description||'Sem descrição')+(d.dueDate?' · Vencimento: '+new Date(d.dueDate+'T12:00:00').toLocaleDateString('pt-BR'):'');heading.append(sub);const tag=document.createElement('span');tag.className='tag '+(bal<=0?'paid':isLate(d)?'late':'');tag.textContent=bal<=0?'QUITADA':isLate(d)?'ATRASADA':'EM ABERTO';top.append(heading,tag);card.append(top);const amt=document.createElement('div');amt.className='amount';amt.textContent=brl(d.amount);card.append(amt);const rem=document.createElement('div');rem.className='remaining';rem.textContent='Pago: '+brl(paid)+' · Falta: '+brl(bal);card.append(rem);const progress=document.createElement('div');progress.className='progress';const bar=document.createElement('i');bar.style.width=pct+'%';progress.append(bar);card.append(progress);const installment=document.createElement('div');installment.className='muted';installment.style.marginTop='8px';installment.textContent='Parcelas previstas: '+(d.installments||1)+' · Registros de pagamento: '+(d.payments||[]).length;card.append(installment);if(d.notes){const note=document.createElement('p');note.className='muted';note.textContent='Obs.: '+d.notes;card.append(note)}const actions=document.createElement('div');actions.className='actions';const pay=document.createElement('button');pay.className='primary tiny';pay.textContent='＋ Registrar pagamento';pay.disabled=bal<=0;pay.onclick=()=>registerPayment(d.id);const edit=document.createElement('button');edit.className='secondary tiny';edit.textContent='Editar';edit.onclick=()=>editDebt(d.id);const history=document.createElement('button');history.className='secondary tiny';history.textContent='Ver pagamentos';history.onclick=()=>showPayments(d);const del=document.createElement('button');del.className='danger tiny';del.textContent='Excluir';del.onclick=()=>deleteDebt(d.id);actions.append(pay,edit,history,del);card.append(actions);root.append(card)}}
+function clearForm(){ $('debtForm').reset();$('editId').value='';$('installments').value='1';$('formTitle').textContent='➕ Cadastrar dívida';$('saveDebt').textContent='Salvar dívida';$('cancelEdit').classList.add('hidden');}
+$('cancelEdit').classList.add('hidden');
+$('debtForm').addEventListener('submit',e=>{e.preventDefault();const person=$('person').value.trim(),amount=Number($('amount').value);if(!person||!Number.isFinite(amount)||amount<=0){alert('Informe o nome e um valor válido.');return}const id=$('editId').value;const data={person,description:$('description').value.trim(),amount,dueDate:$('dueDate').value,installments:Math.max(1,Math.floor(Number($('installments').value)||1)),notes:$('notes').value.trim()};if(id){const d=debts.find(x=>x.id===id);if(d)Object.assign(d,data)}else debts.unshift({id:uid(),...data,createdAt:new Date().toISOString(),payments:[]});persist();clearForm();render();});
+$('cancelEdit').onclick=clearForm;
+function editDebt(id){const d=debts.find(x=>x.id===id);if(!d)return;$('editId').value=d.id;$('person').value=d.person;$('description').value=d.description||'';$('amount').value=d.amount;$('dueDate').value=d.dueDate||'';$('installments').value=d.installments||1;$('notes').value=d.notes||'';$('formTitle').textContent='✏️ Editar dívida';$('saveDebt').textContent='Salvar alterações';$('cancelEdit').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});}
+function registerPayment(id){const d=debts.find(x=>x.id===id);if(!d)return;const bal=balance(d);const raw=prompt('Saldo restante: '+brl(bal)+'\nInforme o valor do pagamento (R$):',bal.toFixed(2).replace('.',','));if(raw===null)return;const val=Number(raw.trim().replace(/\./g,'').replace(',','.'));if(!Number.isFinite(val)||val<=0){alert('Digite um valor válido.');return}if(val>bal+0.0001&&!confirm('O valor é maior que o saldo restante. Registrar mesmo assim?'))return;const date=prompt('Data do pagamento (AAAA-MM-DD):',today());if(date===null)return;if(date&&!/^\d{4}-\d{2}-\d{2}$/.test(date)){alert('Data inválida.');return}const note=prompt('Observação do pagamento (opcional):','')||'';d.payments=d.payments||[];d.payments.push({id:uid(),amount:val,date:date||today(),note,createdAt:new Date().toISOString()});persist();render();}
+function showPayments(d){const ps=d.payments||[];if(!ps.length){alert('Ainda não há pagamentos registrados para '+d.person+'.');return}alert('PAGAMENTOS — '+d.person+'\n\n'+ps.map((p,i)=>(i+1)+'. '+new Date(p.date+'T12:00:00').toLocaleDateString('pt-BR')+' — '+brl(p.amount)+(p.note?'\n   '+p.note:'')).join('\n')+'\n\nTotal pago: '+brl(sumPaid(d))+'\nSaldo: '+brl(balance(d)));}
+function deleteDebt(id){const d=debts.find(x=>x.id===id);if(!d)return;if(!confirm('Excluir a dívida de '+d.person+' e todo o histórico de pagamentos? Essa ação não pode ser desfeita.'))return;debts=debts.filter(x=>x.id!==id);persist();render();}
+$('search').addEventListener('input',render);$('filter').addEventListener('change',render);
+$('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({app:'DividasEmOrganizacao',version:1,exportedAt:new Date().toISOString(),debts},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='backup-dividas-'+today()+'.json';document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());const incoming=Array.isArray(data)?data:data.debts;if(!Array.isArray(incoming)||incoming.some(d=>!d||typeof d.person!=='string'||!Number.isFinite(Number(d.amount))))throw new Error('Formato inválido');if(!confirm('Importar '+incoming.length+' dívidas? Os dados atuais serão substituídos. Exporte um backup atual antes de continuar.'))return;debts=incoming.map(d=>({...d,id:String(d.id||uid()),amount:Number(d.amount),payments:Array.isArray(d.payments)?d.payments:[]}));persist();clearForm();render();alert('Backup importado com sucesso.');}catch(err){alert('Não foi possível importar. Verifique se selecionou um backup válido deste aplicativo.')}finally{e.target.value=''}});
+window.addEventListener('pagehide',persist);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persist()});
+safeLoad();render();
+})();
+</script>
+</body>
+</html>
