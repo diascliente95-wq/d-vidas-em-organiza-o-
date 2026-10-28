@@ -41,9 +41,39 @@ header h1{background:linear-gradient(90deg,#f4f7fb,#44d7a8,#65a7ff,#f4f7fb);back
 .monthly-box label:has(input:checked){box-shadow:0 0 12px rgba(68,215,168,.12)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #65a7ff;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Tela de abertura premium */
+#appSplash{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 42%,#1c3650 0%,#101827 42%,#070d18 100%);opacity:1;visibility:visible;transition:opacity .55s ease,visibility .55s ease}
+#appSplash.splash-hide{opacity:0;visibility:hidden;pointer-events:none}
+#appSplash .splash-content{width:min(86vw,380px);text-align:center;position:relative;z-index:2}
+#appSplash .splash-logo{width:104px;height:104px;margin:0 auto 24px;border-radius:30px;display:grid;place-items:center;background:linear-gradient(145deg,#203a50,#101827);border:1px solid rgba(68,215,168,.65);box-shadow:0 0 0 8px rgba(68,215,168,.06),0 0 42px rgba(68,215,168,.22);font-size:52px;animation:splashLogoIn .8s cubic-bezier(.2,.8,.2,1) both,splashPulse 1.7s ease-in-out .8s infinite}
+#appSplash h2{margin:0;color:#f4f7fb;font-size:clamp(23px,6vw,30px);letter-spacing:-.7px;animation:splashTextIn .7s .18s both}
+#appSplash p{margin:9px 0 28px;color:#9eafc7;font-size:14px;animation:splashTextIn .7s .3s both}
+#appSplash .splash-line{height:4px;width:100%;border-radius:99px;background:#25344c;overflow:hidden}
+#appSplash .splash-line span{display:block;width:40%;height:100%;border-radius:99px;background:linear-gradient(90deg,#44d7a8,#a4ffe5,#65a7ff);box-shadow:0 0 15px #44d7a8;animation:splashLoad 1.55s ease-in-out forwards}
+#appSplash .splash-caption{margin-top:12px;color:#7186a4;font-size:11px;letter-spacing:2px;text-transform:uppercase}
+#appSplash .splash-orb{position:absolute;width:280px;height:280px;border:1px solid rgba(68,215,168,.10);border-radius:50%;animation:splashOrbit 8s linear infinite}
+#appSplash .splash-orb:before,#appSplash .splash-orb:after{content:"";position:absolute;border:1px solid rgba(101,167,255,.10);border-radius:50%;inset:22px}
+#appSplash .splash-orb:after{inset:48px;border-color:rgba(68,215,168,.08)}
+@keyframes splashLogoIn{from{opacity:0;transform:translateY(18px) scale(.82)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes splashTextIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes splashPulse{0%,100%{box-shadow:0 0 0 8px rgba(68,215,168,.06),0 0 28px rgba(68,215,168,.16)}50%{box-shadow:0 0 0 12px rgba(68,215,168,.09),0 0 48px rgba(68,215,168,.38)}}
+@keyframes splashLoad{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
+@keyframes splashOrbit{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#appSplash *,#appSplash:before{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div id="appSplash" role="status" aria-label="Abrindo Dívidas em Organização">
+ <div class="splash-orb" aria-hidden="true"></div>
+ <div class="splash-content">
+  <div class="splash-logo" aria-hidden="true">💳</div>
+  <h2>Dívidas em Organização</h2>
+  <p>Seu controle financeiro, organizado em um só lugar.</p>
+  <div class="splash-line"><span></span></div>
+  <div class="splash-caption">Preparando seu aplicativo</div>
+ </div>
+</div>
 <header>
 <h1>💳 Dívidas em Organização</h1>
 <p>Controle suas dívidas, vencimentos e pagamentos em um só lugar.</p>
@@ -117,6 +147,15 @@ $('importFile').addEventListener('change',async e=>{const f=e.target.files&&e.ta
 window.addEventListener('pagehide',persist);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persist()});
 window.refreshDebtApp=function(){safeLoad();render();};safeLoad();render();
+})();
+</script>
+<script>
+(function(){
+ const splash=document.getElementById('appSplash');
+ if(!splash)return;
+ const finish=()=>{splash.classList.add('splash-hide');setTimeout(()=>splash.remove(),650)};
+ window.addEventListener('load',()=>setTimeout(finish,1750),{once:true});
+ setTimeout(finish,4000);
 })();
 </script>
 <script>
