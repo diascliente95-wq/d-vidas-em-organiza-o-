@@ -1,4 +1,4 @@
-const CACHE_NAME = "dividas-organizacao-v10";
+const CACHE_NAME = "dividas-organizacao-v11";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./monthly.js"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
