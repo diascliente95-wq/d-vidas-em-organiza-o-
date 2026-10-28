@@ -89,7 +89,7 @@ $('importBtn').onclick=()=>$('importFile').click();
 $('importFile').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());const incoming=Array.isArray(data)?data:data.debts;if(!Array.isArray(incoming)||incoming.some(d=>!d||typeof d.person!=='string'||!Number.isFinite(Number(d.amount))))throw new Error('Formato inválido');if(!confirm('Importar '+incoming.length+' dívidas? Os dados atuais serão substituídos. Exporte um backup atual antes de continuar.'))return;debts=incoming.map(d=>({...d,id:String(d.id||uid()),amount:Number(d.amount),payments:Array.isArray(d.payments)?d.payments:[]}));persist();clearForm();render();alert('Backup importado com sucesso.');}catch(err){alert('Não foi possível importar. Verifique se selecionou um backup válido deste aplicativo.')}finally{e.target.value=''}});
 window.addEventListener('pagehide',persist);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')persist()});
-window.refreshDebtApp=render;safeLoad();render();
+window.refreshDebtApp=function(){safeLoad();render();};safeLoad();render();
 })();
 </script>
 <script>
