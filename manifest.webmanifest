@@ -1,0 +1,11 @@
+{
+  "name": "Dívidas em Organização",
+  "short_name": "Dívidas",
+  "description": "Controle de dívidas, parcelas e pagamentos com salvamento automático local.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#101827",
+  "lang": "pt-BR"
+}
