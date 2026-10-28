@@ -161,6 +161,28 @@ window.refreshDebtApp=function(){safeLoad();render();};safeLoad();render();
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(err => console.warn("Service worker não registrado", err))); }
 </script>
+<script>
+/* Confirmação ao tentar sair pelo botão Voltar do Android/navegador */
+(function(){
+ let handling=false;
+ function armBack(){try{history.pushState({dividasAppGuard:true},'',location.href)}catch(e){}}
+ armBack();
+ window.addEventListener('popstate',function(){
+  if(handling)return;
+  handling=true;
+  const leave=confirm('Deseja sair do aplicativo Dívidas em Organização?\n\nSeus dados salvos serão mantidos.');
+  if(!leave){armBack();handling=false;return;}
+  // O navegador/Android controla o fechamento da janela PWA; a página não pode forçar o encerramento.
+  handling=false;
+ });
+ // Persiste dados quando o app vai para segundo plano ou a página é ocultada.
+ document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden' && typeof window.refreshDebtApp==='function'){
+   try{window.dispatchEvent(new Event('dividas-app-background'))}catch(e){}
+  }
+ });
+})();
+</script>
 <script src="./monthly.js"></script>
 </body>
 </html>
