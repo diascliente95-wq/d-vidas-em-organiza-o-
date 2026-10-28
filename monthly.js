@@ -8,7 +8,7 @@
   const data=load(); const cards=root.querySelectorAll('.debt');
   cards.forEach((card,index)=>{
    if(card.querySelector('.monthly-box'))return;
-   const d=data[index]; if(!d)return;
+   const d=data.find(item=>item.id===card.dataset.debtId); if(!d)return;
    if(!d.monthsPaid)d.monthsPaid={};
    const box=document.createElement('div');box.className='monthly-box';
    box.style.cssText='margin-top:12px;padding:12px;border:1px solid #273750;border-radius:12px;background:#0d1728';
